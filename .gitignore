@@ -1,0 +1,28 @@
+# Build artifacts and compilation cache
+.precomp/
+blib/
+*.o
+*.so
+*.dylib
+*.a
+capture/build/
+build/
+bin/sigil-capture
+
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# Operating system artifacts
+.DS_Store
+Thumbs.db
+
+# Test outputs and temporary files
+*.tmp
+tmp/
+*.log
+t/fixtures/generated/
