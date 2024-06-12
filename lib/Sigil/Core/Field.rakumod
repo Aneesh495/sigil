@@ -133,7 +133,7 @@ class FieldList {
         %!index{$f.key} = $f;
     }
 
-    method get(Str $key --> Field) {
+    method get(Str $key --> Any) {
         return %!index{$key};
     }
 
