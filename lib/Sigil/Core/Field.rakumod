@@ -69,6 +69,10 @@ class FlagField is Field {
     has Int $.mask is required;
     has Bool $.is-set is required;
 
+    method value() {
+        return $!is-set;
+    }
+
     method format-value(--> Str) {
         return $!is-set ?? "Set (1)" !! "Not set (0)";
     }
