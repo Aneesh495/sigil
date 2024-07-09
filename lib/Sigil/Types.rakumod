@@ -127,7 +127,7 @@ subset IPv6Str of Str is export where {
 };
 
 # Helper function: Convert EtherType integer code to human readable name
-sub ethertype-to-name(Int $val --> Str) is export {
+our sub ethertype-to-name(Int $val --> Str) is export {
     return do given $val {
         when 0x0800 { 'IPv4' }
         when 0x0806 { 'ARP' }
@@ -141,7 +141,7 @@ sub ethertype-to-name(Int $val --> Str) is export {
 }
 
 # Helper function: Convert IP protocol number to human readable name
-sub ipproto-to-name(Int $val --> Str) is export {
+our sub ipproto-to-name(Int $val --> Str) is export {
     return do given $val {
         when 1   { 'ICMP' }
         when 2   { 'IGMP' }
@@ -160,7 +160,7 @@ sub ipproto-to-name(Int $val --> Str) is export {
 }
 
 # Helper function: Parse TCP flag bitfield into human readable string sequence
-sub tcp-flags-to-str(Int $flags --> Str) is export {
+our sub tcp-flags-to-str(Int $flags --> Str) is export {
     my @parts;
     @parts.push('FIN') if $flags +& 0x001;
     @parts.push('SYN') if $flags +& 0x002;
