@@ -29,7 +29,7 @@ method register-linktype(Int $dlt, $dissector) {
 
 # Lookup dissector for DLT
 method find-by-linktype(Int $dlt) {
-    return %!linktype-table{$dlt} // Nil;
+    return %!linktype-table{$dlt}:exists ?? %!linktype-table{$dlt} !! Nil;
 }
 
 # Register dissector for EtherType code
@@ -39,7 +39,7 @@ method register-ethertype(Int $ethertype, $dissector) {
 
 # Lookup dissector for EtherType
 method find-by-ethertype(Int $ethertype) {
-    return %!ethertype-table{$ethertype} // Nil;
+    return %!ethertype-table{$ethertype}:exists ?? %!ethertype-table{$ethertype} !! Nil;
 }
 
 # Register dissector for IP Protocol number
@@ -49,7 +49,7 @@ method register-ipproto(Int $proto, $dissector) {
 
 # Lookup dissector for IP Protocol number
 method find-by-ipproto(Int $proto) {
-    return %!ipproto-table{$proto} // Nil;
+    return %!ipproto-table{$proto}:exists ?? %!ipproto-table{$proto} !! Nil;
 }
 
 # Register dissector for TCP destination or source port
@@ -59,7 +59,7 @@ method register-tcp-port(Int $port, $dissector) {
 
 # Lookup dissector for TCP port
 method find-by-tcp-port(Int $port) {
-    return %!tcp-port-table{$port} // Nil;
+    return %!tcp-port-table{$port}:exists ?? %!tcp-port-table{$port} !! Nil;
 }
 
 # Register dissector for UDP destination or source port
@@ -69,7 +69,7 @@ method register-udp-port(Int $port, $dissector) {
 
 # Lookup dissector for UDP port
 method find-by-udp-port(Int $port) {
-    return %!udp-port-table{$port} // Nil;
+    return %!udp-port-table{$port}:exists ?? %!udp-port-table{$port} !! Nil;
 }
 
 # Register heuristic pattern checker
