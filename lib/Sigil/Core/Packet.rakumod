@@ -37,6 +37,17 @@ class Packet {
         return $!capture-length < $!wire-length;
     }
 
+    # Packet captured length convenience accessor
+    method length(--> Int) {
+        return $!capture-length;
+    }
+
+    # Payload buffer of the highest decoded layer
+    method payload(--> Buf) {
+        my $top = self.highest-layer;
+        return ($top.defined && $top.raw-payload.defined) ?? $top.raw-payload !! Buf.new;
+    }
+
     # Push newly decoded protocol layer onto stack and link parent/child relations
     method push-layer(Layer $new-layer) {
         if @!layers.elems > 0 {
