@@ -163,6 +163,25 @@ method read-uint64-be(--> Int) {
     return ($hi +< 32) +| $lo;
 }
 
+# Read unsigned 64-bit integer in little-endian order
+method read-uint64-le(--> Int) {
+    self.require-bytes(8);
+    my $lo = self.read-uint32-le();
+    my $hi = self.read-uint32-le();
+    return ($hi +< 32) +| $lo;
+}
+
+# Fluent aliases for compact binary protocol code
+method read-u8(--> Int) { return self.read-uint8(); }
+method read-u16(--> Int) { return self.read-uint16-be(); }
+method read-u16-le(--> Int) { return self.read-uint16-le(); }
+method read-u32(--> Int) { return self.read-uint32-be(); }
+method read-u32-le(--> Int) { return self.read-uint32-le(); }
+method read-u64(--> Int) { return self.read-uint64-be(); }
+method read-u64-le(--> Int) { return self.read-uint64-le(); }
+method peek-u8(Int $delta = 0 --> Int) { return self.peek-uint8($delta); }
+method is-eof(--> Bool) { return self.at-eof(); }
+
 # Read arbitrary byte slice of specified length
 method read-bytes(Int $count --> Buf) {
     self.require-bytes($count);
