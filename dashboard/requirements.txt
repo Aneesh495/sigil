@@ -1,0 +1,4 @@
+# Python dependencies for Sigil TUI Dashboard
+# The core terminal dashboard runs with zero external dependencies (Python standard library curses).
+# Optional packages for enhanced features:
+pytest>=7.0.0
