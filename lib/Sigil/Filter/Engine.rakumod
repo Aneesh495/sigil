@@ -57,3 +57,9 @@ method stats(--> Hash) {
         match_rate        => $!packets-evaluated > 0 ?? ($!packets-matched / $!packets-evaluated) !! 0e0
     };
 }
+
+# Standalone exported helper: compile filter expression into callable predicate
+our sub compile-filter(Str $expr --> Sub) is export {
+    my $compiler = Sigil::Filter::Compiler.new;
+    return $compiler.compile($expr);
+}

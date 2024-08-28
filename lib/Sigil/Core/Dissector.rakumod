@@ -105,8 +105,20 @@ method init-default-registrations() {
     }, Sigil::Grammar::Protocol::SSH.new);
 }
 
-# Main dissection entrypoint: transforms raw frame into fully decoded Packet object
-method dissect-packet(
+# Main dissection entrypoints: transforms raw frame or packet container into fully decoded Packet object
+multi method dissect-packet(Sigil::Core::Packet $pkt --> Sigil::Core::Packet) {
+    return self.dissect-packet(
+        $pkt.raw,
+        :packet-id($pkt.packet-id),
+        :timestamp($pkt.timestamp),
+        :wire-length($pkt.wire-length),
+        :capture-length($pkt.capture-length),
+        :interface($pkt.interface),
+        :direction($pkt.direction)
+    );
+}
+
+multi method dissect-packet(
     Buf $raw-bytes,
     Int :$linktype = 1,
     Int :$packet-id = 0,
@@ -208,4 +220,17 @@ method stats(--> Hash) {
         errors_encountered => $!errors-encountered,
         protocols          => %!protocol-counters
     };
+}
+
+# Standalone exported helper for dissecting a Packet object
+our sub dissect-packet(Sigil::Core::Packet $raw-pkt, Sigil::Core::Dissector $pipeline = Sigil::Core::Dissector.new --> Sigil::Core::Packet) is export {
+    return $pipeline.dissect-packet(
+        $raw-pkt.raw,
+        :packet-id($raw-pkt.packet-id),
+        :timestamp($raw-pkt.timestamp),
+        :wire-length($raw-pkt.wire-length),
+        :capture-length($raw-pkt.capture-length),
+        :interface($raw-pkt.interface),
+        :direction($raw-pkt.direction)
+    );
 }

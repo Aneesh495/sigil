@@ -154,11 +154,13 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
         if $actions.is-request {
             $disp = sprintf("HTTP %s %s (%s)", $actions.method, $actions.uri, $actions.version);
             $fl.add(Sigil::Core::StringField.new(:name("Request Method"), :key("http.request.method"), :value($actions.method)));
+            $fl.add(Sigil::Core::StringField.new(:name("Method"), :key("http.method"), :value($actions.method)));
             $fl.add(Sigil::Core::StringField.new(:name("Request URI"), :key("http.request.uri"), :value($actions.uri)));
             $fl.add(Sigil::Core::StringField.new(:name("Request Version"), :key("http.request.version"), :value($actions.version)));
         } elsif $actions.is-response {
             $disp = sprintf("HTTP %s %d %s", $actions.version, $actions.status-code, $actions.reason-phrase);
             $fl.add(Sigil::Core::IntField.new(:name("Status Code"), :key("http.response.code"), :value($actions.status-code)));
+            $fl.add(Sigil::Core::IntField.new(:name("Status Code"), :key("http.status_code"), :value($actions.status-code)));
             $fl.add(Sigil::Core::StringField.new(:name("Reason Phrase"), :key("http.response.phrase"), :value($actions.reason-phrase)));
             $fl.add(Sigil::Core::StringField.new(:name("Response Version"), :key("http.response.version"), :value($actions.version)));
         }

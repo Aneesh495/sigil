@@ -33,6 +33,7 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
     }
 
     my $start-offset = $buf.offset;
+    my $dissect-status = STATUS_OK;
     my $tx-id = $buf.read-uint16-be();
     my $flags = $buf.read-uint16-be();
 
@@ -108,10 +109,14 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
     $fl.add(Sigil::Core::IntField.new(:name("Additional RRs"), :key("dns.count.add_rr"), :offset-bytes(10), :length-bytes(2), :value($ar-count)));
 
     # Helper sub for decoding DNS domain name with compression pointers
-    my sub read-dns-name(Sigil::Core::Buffer $b, Buf $msg-raw, Int $msg-start --> Str) {
+    my sub read-dns-name(Sigil::Core::Buffer $b, Buf $msg-raw, Int $msg-start, Int $depth = 0 --> Str) {
+        if $depth > 8 {
+            $dissect-status = STATUS_MALFORMED;
+            return "";
+        }
         my @labels;
         my $jumps = 0;
-        my $max-jumps = 16; # Safeguard against circular pointer loops
+        my $max-jumps = 8; # Safeguard against circular pointer loops
 
         while $b.remaining > 0 {
             my $len = $b.read-uint8();
@@ -123,12 +128,13 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
                 }
                 my $lo = $b.read-uint8();
                 my $ptr-offset = (($len +& 0x3F) +< 8) +| $lo;
-                if ++$jumps > $max-jumps || $ptr-offset >= $msg-raw.elems {
+                if ++$jumps > $max-jumps || $ptr-offset >= $msg-raw.elems || $depth >= 8 {
+                    $dissect-status = STATUS_MALFORMED;
                     last; # Avoid loops or out-of-bounds
                 }
                 # Create auxiliary reader at pointed location
                 my $ptr-buf = Sigil::Core::Buffer.new($msg-raw, :offset($msg-start + $ptr-offset));
-                my $sub-name = read-dns-name($ptr-buf, $msg-raw, $msg-start);
+                my $sub-name = read-dns-name($ptr-buf, $msg-raw, $msg-start, $depth + 1);
                 @labels.push($sub-name) if $sub-name ne "";
                 last; # Pointer terminates local sequence
             } else {
@@ -157,6 +163,11 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
             $fl.add(Sigil::Core::StringField.new(
                 :name("Query Name"),
                 :key("dns.qry.name"),
+                :value($qname)
+            ));
+            $fl.add(Sigil::Core::StringField.new(
+                :name("Query Name"),
+                :key("dns.query.name"),
                 :value($qname)
             ));
             $fl.add(Sigil::Core::EnumField.new(
@@ -239,7 +250,7 @@ method dissect(Buf $raw, Int :$offset = 0 --> Sigil::Core::Layer) {
         :raw-header($raw-header),
         :raw-payload(Buf.new),
         :fields($fl),
-        :status(STATUS_OK),
+        :status($dissect-status),
         :next-protocol(Nil)
     );
 }
