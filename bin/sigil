@@ -1,0 +1,9 @@
+#!/usr/bin/env raku
+use v6.d;
+use lib 'lib';
+use Sigil::CLI::Options;
+use Sigil::CLI::Runner;
+
+my $opts = Sigil::CLI::Options.parse(@*ARGS);
+my $runner = Sigil::CLI::Runner.new;
+exit($runner.run($opts));

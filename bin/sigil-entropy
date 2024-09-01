@@ -1,0 +1,10 @@
+#!/usr/bin/env raku
+use v6.d;
+use lib 'lib';
+use Sigil::CLI::Options;
+use Sigil::CLI::Runner;
+
+my @full-args = ("entropy", |@*ARGS);
+my $opts = Sigil::CLI::Options.parse(@full-args);
+my $runner = Sigil::CLI::Runner.new;
+exit($runner.run($opts));
