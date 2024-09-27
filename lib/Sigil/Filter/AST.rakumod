@@ -32,7 +32,9 @@ class CompareNode does Node {
         my $actual = $pkt.val($!field-key);
         return False unless $actual.defined;
 
-        my $target = $!target-val;
+        my $target = ($actual ~~ Numeric && $!target-val ~~ Str && $!target-val ~~ /^ \-? \d+ $/ )
+            ?? $!target-val.Int
+            !! $!target-val;
 
         # String vs Numeric comparison
         if $actual ~~ Numeric && $target ~~ Numeric {

@@ -97,7 +97,7 @@ method value($/) {
     } elsif $<ip-addr-val> {
         make ~$<ip-addr-val>;
     } elsif $<dec-num> {
-        make ~$<dec-num>.Int;
+        make $<dec-num>.made;
     }
 }
 
@@ -106,7 +106,7 @@ method hex-num($/) {
 }
 
 method dec-num($/) {
-    make ~$/.Int;
+    make $/.Int;
 }
 
 method string-val($/) {
