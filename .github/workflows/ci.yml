@@ -1,0 +1,78 @@
+name: Sigil Multi-Language CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  style-and-conformance:
+    name: Character & Conformance Auditing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify zero em dash characters
+        run: |
+          chmod +x ./scripts/verify_no_em_dash.sh
+          ./scripts/verify_no_em_dash.sh
+
+  raku-dissector-suite:
+    name: Raku Dissector & Protocol Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Rakudo compiler
+        uses: Raku/setup-rakudo@v1
+        with:
+          rakudo-version: '2024.07'
+
+      - name: Verify Rakudo installation
+        run: raku --version
+
+      - name: Run test suite
+        run: |
+          prove -e "raku -Ilib" -r t/
+
+  c-capture-core:
+    name: C Lockless Ring & Capture Engine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install build toolchain
+        run: sudo apt-get update && sudo apt-get install -y build-essential gcc clang
+
+      - name: Compile and run test suite
+        run: |
+          cd capture
+          make clean
+          make test
+          make all
+
+      - name: Execute microbenchmark stress test
+        run: |
+          cd capture
+          ./build/sigil-capture -b
+
+  python-telemetry-dashboard:
+    name: Python Telemetry State & UI Models
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run test suite
+        run: |
+          cd dashboard
+          python3 -m unittest discover -s tests
