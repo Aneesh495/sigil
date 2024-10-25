@@ -14,6 +14,8 @@ has Num $.rate-multiplier = 0e0;
 has Int $.packet-limit = 0;
 has Bool $.verbose = False;
 has Bool $.show-help = False;
+has Num $.threshold = 7.0e0;
+has Bool $.reassemble = False;
 
 # Parse command line argument array
 method parse(@args --> Sigil::CLI::Options) {
@@ -26,6 +28,8 @@ method parse(@args --> Sigil::CLI::Options) {
     my $limit = 0;
     my $verb = False;
     my $help = False;
+    my $thresh = 7.0e0;
+    my $reasm = False;
 
     my @rest = @args;
     if @rest.elems > 0 && !@rest[0].starts-with("-") {
@@ -44,6 +48,15 @@ method parse(@args --> Sigil::CLI::Options) {
             when "--format" {
                 $fmt = @rest.shift if @rest.elems > 0;
             }
+            when "--hex" {
+                $fmt = "hex";
+            }
+            when "--threshold" {
+                $thresh = @rest.shift.Num if @rest.elems > 0;
+            }
+            when "--reassemble" {
+                $reasm = True;
+            }
             when "-V" | "--tree" {
                 $tree = True;
             }
@@ -55,6 +68,7 @@ method parse(@args --> Sigil::CLI::Options) {
             }
             when "-v" | "--verbose" {
                 $verb = True;
+                $tree = True;
             }
             when "-h" | "--help" {
                 $help = True;
@@ -76,7 +90,9 @@ method parse(@args --> Sigil::CLI::Options) {
         :rate-multiplier($rate),
         :packet-limit($limit),
         :verbose($verb),
-        :show-help($help)
+        :show-help($help),
+        :threshold($thresh),
+        :reassemble($reasm)
     );
 }
 
