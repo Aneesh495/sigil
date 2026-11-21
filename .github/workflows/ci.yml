@@ -26,10 +26,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install Rakudo compiler
-        uses: Raku/setup-rakudo@v1
-        with:
-          rakudo-version: '2024.07'
+      - name: Install Rakudo 2026.09
+        run: |
+          install_dir="$RUNNER_TEMP/sigil-rakudo"
+          archive="$install_dir/rakudo.tar.gz"
+          mkdir -p "$install_dir"
+          curl -fsSL https://rakudo.org/dl/rakudo/rakudo-moar-2026.09-01-linux-x86_64-gcc.tar.gz -o "$archive"
+          echo "cbf024e8d83c307533216f6039668a39df5e592be5d230af6c8e7cec2423d0e9  $archive" | sha256sum --check --strict
+          tar -xzf "$archive" --strip-components=1 -C "$install_dir"
+          echo "$install_dir/bin" >> "$GITHUB_PATH"
 
       - name: Verify Rakudo installation
         run: raku --version
