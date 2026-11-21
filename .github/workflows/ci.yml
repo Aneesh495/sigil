@@ -27,9 +27,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install Rakudo compiler
-        uses: Raku/setup-rakudo@v1
-        with:
-          rakudo-version: '2024.07'
+        run: sudo apt-get update && sudo apt-get install -y rakudo
 
       - name: Verify Rakudo installation
         run: raku --version
